@@ -23,15 +23,28 @@ namespace _Source.Scripts
 			RequestEvents.Instance.OnRoomDeactivated -= DeactivateRoom;
 		}
 
-		private void ActivateRoom()
-		{
-			alertFeedbacks.PlayFeedbacks();
-			Available = false;
-		}
-
-		private void DeactivateRoom()
+		private void Start()
 		{
 			Available = true;
+			RoomManager.Instance.AddRoom(this);
+		}
+
+		private void ActivateRoom(Room room)
+		{
+			if(room == this)
+			{
+				print(room.name);
+				alertFeedbacks.PlayFeedbacks();
+				Available = false;
+			}
+		}
+
+		private void DeactivateRoom(Room room)
+		{
+			if (room == this)
+			{
+				Available = true;
+			}
 		}
 	}
 }

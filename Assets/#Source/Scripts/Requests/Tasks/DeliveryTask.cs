@@ -3,8 +3,8 @@
 namespace _Source.Scripts
 {
 	[CreateAssetMenu]
-	public class DeliveryTask : ScriptableObject
+	public class DeliveryTask : Task
 	{
-		
+
 	}
 }

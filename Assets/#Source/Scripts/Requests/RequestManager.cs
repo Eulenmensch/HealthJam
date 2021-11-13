@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Sirenix.OdinInspector;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -26,7 +28,7 @@ namespace _Source.Scripts
 
 		[SerializeField] private List<RequestBlueprint> requests = new List<RequestBlueprint>();
 
-		private Dictionary<Guid, Request> activeRequestsDictionary;
+		private Dictionary<Guid, Request> activeRequestsDictionary = new Dictionary<Guid, Request>();
 
 		private void OnEnable()
 		{
@@ -38,20 +40,24 @@ namespace _Source.Scripts
 			RequestEvents.Instance.OnTaskCompleted -= CompleteTask;
 		}
 
+		[Button]
 		public void SelectRandomRequest()
 		{
-			int randomIndex = Random.Range(0, requests.Count - 1);
+			int randomIndex = Random.Range(0, requests.Count);
 			RequestBlueprint selectedRequestBlueprint = requests[randomIndex];
-			Request request = new Request(selectedRequestBlueprint, false);
+			Request request = new Request(selectedRequestBlueprint);
 
-			Guid requestID = new Guid();
+			Guid requestID = Guid.NewGuid();
+			print(requestID.ToString());
+			print(request.Blueprint.name);
 			activeRequestsDictionary.Add(requestID, request);
 
 			foreach (var task in selectedRequestBlueprint.Tasks)
 			{
+				print(task.name);
 				var room = RoomManager.Instance.GetRandomAvailableRoomOfType(task.destinationType);
 				if (room == null) return;
-				RequestEvents.Instance.RoomActivated();
+				RequestEvents.Instance.RoomActivated(room);
 
 				TaskChecker taskChecker = room.AddComponent<TaskChecker>();
 				taskChecker.ParentRequestID = requestID;
@@ -61,18 +67,22 @@ namespace _Source.Scripts
 
 		private void CompleteTask(Guid parentRequestID)
 		{
+			print("completing Task");
 			Request parentRequest = activeRequestsDictionary[parentRequestID];
-			foreach (var taskChecker in parentRequest.OwnTaskCheckers)
+			foreach (var taskChecker in parentRequest.OwnTaskCheckers.ToList())
 			{
 				if (!taskChecker.Completed)
 				{
-					return;
+					continue;
 				}
+
+				Room currentRoom = taskChecker.GetComponent<Room>();
+				RequestEvents.Instance.RoomDeactivated(currentRoom);
+				parentRequest.OwnTaskCheckers.Remove(taskChecker);
 				Destroy(taskChecker); //TODO: not sure if this ruins the for loop
 			}
-			parentRequest.Completed = true;
+			
 			RequestEvents.Instance.RequestCompleted(parentRequest.Blueprint); //TODO: the praise bar needs to subscribe to this
-			RequestEvents.Instance.RoomDeactivated();
 		}
 	}
 }

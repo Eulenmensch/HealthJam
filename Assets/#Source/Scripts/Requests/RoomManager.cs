@@ -25,14 +25,28 @@ namespace _Source.Scripts
 
 		public Room GetRandomAvailableRoomOfType(LocationType locationType)
 		{
+			List<Room> validRooms = new List<Room>();
 			foreach (var room in rooms)
 			{
 				if (room.locationType == locationType && room.Available)
 				{
-					return room;
+					validRooms.Add(room);
 				}
 			}
-			return null;
+
+			if (validRooms.Count == 0)
+			{
+				return null;
+			}
+
+			int randomRoomIndex = Random.Range(0, validRooms.Count);
+			print(randomRoomIndex);
+			return validRooms[randomRoomIndex];
+		}
+
+		public void AddRoom(Room room)
+		{
+			rooms.Add(room);
 		}
 	}
 }

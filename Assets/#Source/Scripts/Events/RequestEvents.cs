@@ -27,9 +27,9 @@ namespace _Source.Scripts
 		public event Action<RequestBlueprint> OnRequestCompleted;
 		public void RequestCompleted(RequestBlueprint blueprint){OnRequestCompleted?.Invoke(blueprint);}
 
-		public event Action OnRoomActivated;
-		public void RoomActivated(){OnRoomActivated?.Invoke();}
-		public event Action OnRoomDeactivated;
-		public void RoomDeactivated(){OnRoomDeactivated?.Invoke();}
+		public event Action<Room> OnRoomActivated;
+		public void RoomActivated(Room room){OnRoomActivated?.Invoke(room);}
+		public event Action<Room> OnRoomDeactivated;
+		public void RoomDeactivated(Room room){OnRoomDeactivated?.Invoke(room);}
 	}
 }
