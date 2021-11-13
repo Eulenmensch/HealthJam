@@ -44,6 +44,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Menu"",
+                    ""type"": ""Button"",
+                    ""id"": ""f6a8456c-a79d-4873-8bb6-4b3114b56f7c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -167,6 +176,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2ce6303f-c8ff-4ed2-8bba-8d1692cf5619"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Character Controls"",
+                    ""action"": ""Menu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -194,6 +214,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_CharacterActions = asset.FindActionMap("Character Actions", throwIfNotFound: true);
         m_CharacterActions_Move = m_CharacterActions.FindAction("Move", throwIfNotFound: true);
         m_CharacterActions_Interact = m_CharacterActions.FindAction("Interact", throwIfNotFound: true);
+        m_CharacterActions_Menu = m_CharacterActions.FindAction("Menu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -255,12 +276,14 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private ICharacterActionsActions m_CharacterActionsActionsCallbackInterface;
     private readonly InputAction m_CharacterActions_Move;
     private readonly InputAction m_CharacterActions_Interact;
+    private readonly InputAction m_CharacterActions_Menu;
     public struct CharacterActionsActions
     {
         private @PlayerControls m_Wrapper;
         public CharacterActionsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_CharacterActions_Move;
         public InputAction @Interact => m_Wrapper.m_CharacterActions_Interact;
+        public InputAction @Menu => m_Wrapper.m_CharacterActions_Menu;
         public InputActionMap Get() { return m_Wrapper.m_CharacterActions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -276,6 +299,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Interact.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnInteract;
+                @Menu.started -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMenu;
+                @Menu.performed -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMenu;
+                @Menu.canceled -= m_Wrapper.m_CharacterActionsActionsCallbackInterface.OnMenu;
             }
             m_Wrapper.m_CharacterActionsActionsCallbackInterface = instance;
             if (instance != null)
@@ -286,6 +312,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
+                @Menu.started += instance.OnMenu;
+                @Menu.performed += instance.OnMenu;
+                @Menu.canceled += instance.OnMenu;
             }
         }
     }
@@ -303,5 +332,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnMenu(InputAction.CallbackContext context);
     }
 }
